@@ -9,6 +9,7 @@ test("OAuth and MCP security contract", () => {
   assert.match(source, /timingSafeEqual/);
   assert.match(source, /resource_metadata/);
   assert.match(source, /verify\(match\?\.\[1\], "access"\)/);
+  assert.match(source, /form-action 'self' https:\/\/claude\.ai https:\/\/claude\.com/);
   assert.doesNotMatch(source, /name:\s*"publish_to_threads"/);
   assert.doesNotMatch(source, /name:\s*"reply_to_threads"/);
 });
