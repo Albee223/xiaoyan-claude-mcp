@@ -235,12 +235,18 @@ async function handle(req, res) {
       return json(res, 400, { error: "invalid_grant", error_description: error.message });
     }
   }
-  if (url.pathname === "/mcp" && req.method === "POST") {
+  if (url.pathname === "/mcp") {
     try {
       const match = String(req.headers.authorization || "").match(/^Bearer\s+(.+)$/i);
       verify(match?.[1], "access");
     } catch {
       return json(res, 401, { error: "unauthorized" }, { "WWW-Authenticate": `Bearer resource_metadata="${base}/.well-known/oauth-protected-resource/mcp"` });
+    }
+    if (req.method === "GET") {
+      return json(res, 405, { error: "method_not_allowed", message: "Use POST for MCP requests." }, { Allow: "POST" });
+    }
+    if (req.method !== "POST") {
+      return json(res, 405, { error: "method_not_allowed" }, { Allow: "POST" });
     }
     const rpc = JSON.parse(await readBody(req));
     if (String(rpc.method || "").startsWith("notifications/")) { res.writeHead(202); return res.end(); }
